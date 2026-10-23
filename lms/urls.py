@@ -22,5 +22,6 @@ from studrada import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.home),
+    path("about/", views.about, name="about"),
     path("studrada/", views.home, name="stud"),
 ]
