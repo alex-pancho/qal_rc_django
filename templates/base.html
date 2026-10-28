@@ -3,19 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/script.js' %}"></script>
+    <title>{% block title %}Document{% endblock %}</title>
+
 </head>
 <body>
-    <div>
-        <h1>{{ title }}</h1>
-        <p>{{ message }}</p>
-    </div>
-    <nav>
+    <header>
+        <h1>Навчальна система</h1>
+        <nav>Меню</nav>
+    </header>
+    {% load static %}
+    <img src="{% static 'img/qa.png' %}" alt="Логотип">
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
         <ul>
             <li><a href="{% url 'home' %}">Головна</a></li>
             <li><a href="{% url 'about' %}">Про нас</a></li>
             <li><a href="{% url 'stud' %}">студрада</a></li>
         </ul>
-    </nav>   
+       
+        <p>© 2026 Мій сайт</p>
+    </footer> 
 </body>
 </html>
