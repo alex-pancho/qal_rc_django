@@ -1,35 +1,23 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="{% static 'js/script.js' %}"></script>
-    <title>{% block title %}Document{% endblock %}</title>
-
+    <title>{% block title %}Демо LMS{% endblock %} | Демо LMS</title>
+    <link rel="stylesheet" href="{% static 'css/lms.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <header>
-        <h1>Навчальна система</h1>
-        <nav>Меню</nav>
-    </header>
-    {% load static %}
-    <img src="{% static 'img/qa.png' %}" alt="Логотип">
+    {% include "includes/navbar.html" %}
 
-    <main>
-        {% block content %}
-        {% endblock %}
+    <main class="container">
+        {% block content %}{% endblock %}
     </main>
 
-    <footer>
-        <ul>
-            <li><a href="{% url 'home' %}">Головна</a></li>
-            <li><a href="{% url 'about' %}">Про нас</a></li>
-            <li><a href="{% url 'stud' %}">студрада</a></li>
-        </ul>
-       
-        <p>© 2026 Мій сайт</p>
-    </footer> 
+    {% include "includes/footer.html" %}
+
+    <script src="{% static 'js/lms.js' %}" defer></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

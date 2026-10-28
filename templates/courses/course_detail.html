@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+<p class="muted"><a href="{% url 'course_list' %}">← Усі курси</a></p>
+
+<h1>{{ course.title }}</h1>
+<p class="muted">Викладач: {{ course.teacher }} · Рівень: {{ course.level }} · {{ course.hours }} год</p>
+<p>{{ course.description }}</p>
+
+<h2>Програма курсу</h2>
+<ol class="lessons">
+    {% for lesson in course.lessons %}
+    <li>
+        <a href="{% url 'lesson_detail' course.slug forloop.counter %}">{{ lesson.title }}</a>
+        <span class="muted">{{ lesson.minutes }} хв</span>
+    </li>
+    {% endfor %}
+</ol>
+{% endblock %}

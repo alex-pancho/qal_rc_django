@@ -1,0 +1,17 @@
+{% load static %}
+{% with current=request.resolver_match.url_name %}
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="brand" href="{% url 'home' %}">
+            <img src="{% static 'img/qa.png' %}" alt="Логотип" width="36" height="36">
+            <span>Демо LMS</span>
+        </a>
+        <nav>
+            <a href="{% url 'home' %}" {% if current == 'home' %}class="active"{% endif %}>Головна</a>
+            <a href="{% url 'course_list' %}"
+               {% if current == 'course_list' or current == 'course_detail' or current == 'lesson_detail' %}class="active"{% endif %}>Курси</a>
+            <a href="{% url 'dashboard' %}" {% if current == 'dashboard' %}class="active"{% endif %}>Мій кабінет</a>
+        </nav>
+    </div>
+</header>
+{% endwith %}

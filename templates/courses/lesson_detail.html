@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lesson.title }}{% endblock %}
+
+{% block content %}
+<p class="muted">
+    <a href="{% url 'course_detail' course.slug %}">← {{ course.title }}</a>
+</p>
+
+<h1>Урок {{ number }}. {{ lesson.title }}</h1>
+<p class="muted">Тривалість: {{ lesson.minutes }} хв</p>
+<p>{{ lesson.summary }}</p>
+
+<button class="btn" id="done-btn" data-key="{{ course.slug }}-{{ number }}">Позначити пройденим</button>
+
+<div class="pager">
+    {% if prev_number %}
+        <a href="{% url 'lesson_detail' course.slug prev_number %}">← Попередній урок</a>
+    {% else %}
+        <span></span>
+    {% endif %}
+    {% if next_number %}
+        <a href="{% url 'lesson_detail' course.slug next_number %}">Наступний урок →</a>
+    {% endif %}
+</div>
+{% endblock %}

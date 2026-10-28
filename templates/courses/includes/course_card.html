@@ -1,0 +1,7 @@
+<article class="card" data-title="{{ course.title|lower }}">
+    {% if course.is_new %}<span class="badge">Новий</span>{% endif %}
+    <h3><a href="{% url 'course_detail' course.slug %}">{{ course.title }}</a></h3>
+    <p class="muted">{{ course.level }} · {{ course.hours }} год · {{ course.lessons|length }} уроків</p>
+    <p>{{ course.description|truncatechars:80 }}</p>
+    <a class="btn" href="{% url 'course_detail' course.slug %}">Детальніше</a>
+</article>

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Головна сторінка{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Вчимося разом</h1>
+    <p>Легка демо-LMS: каталог курсів, уроки та особистий кабінет студента.</p>
+    <p class="stats">Курсів: <strong>{{ courses_count }}</strong> · Уроків: <strong>{{ lessons_count }}</strong></p>
+    <a class="btn" href="{% url 'course_list' %}">Переглянути курси</a>
+</section>
+
+<h2>Рекомендовані курси</h2>
+<div class="grid">
+    {% for course in featured %}
+        {% include "courses/includes/course_card.html" %}
+    {% empty %}
+        <p>Курсів поки немає.</p>
+    {% endfor %}
+</div>
+{% endblock %}

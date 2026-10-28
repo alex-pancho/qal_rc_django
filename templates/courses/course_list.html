@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Курси{% endblock %}
+
+{% block content %}
+<h1>Каталог курсів</h1>
+
+<form method="get" class="search">
+    <input type="search" name="q" value="{{ query }}" placeholder="Пошук за назвою" id="course-search">
+    <button class="btn" type="submit">Знайти</button>
+</form>
+
+{% if query %}
+    <p class="muted">Результати за запитом «{{ query }}»: {{ courses|length }}</p>
+{% endif %}
+
+<div class="grid">
+    {% for course in courses %}
+        {% include "courses/includes/course_card.html" %}
+    {% empty %}
+        <p>Нічого не знайдено. <a href="{% url 'course_list' %}">Скинути пошук</a></p>
+    {% endfor %}
+</div>
+{% endblock %}
