@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, Http404
 
 from . data import COURSES, STUDENT, get_course
+from . models import Course
 
 def home(request):
     context = {
@@ -68,8 +69,8 @@ def post_detail(request, post_id:int):
 
 def lms_home(request):
     context = {
-        "featured": COURSES[:2],
-        "courses_count": len(COURSES),
+        "featured": Course.objects.all()[:2],
+        "courses_count": Course.objects.count(),
         "lessons_count": sum(len(c["lessons"]) for c in COURSES),
     }
     return render(request, "courses/home.html", context)
@@ -77,7 +78,7 @@ def lms_home(request):
 
 def course_list(request):
     query = request.GET.get("q", "").strip()
-    courses = COURSES
+    courses = Course.objects.all()
     if query:
         courses = [c for c in COURSES if query.lower() in c["title"].lower()]
     context = {"courses": courses, "query": query}
@@ -85,7 +86,7 @@ def course_list(request):
 
 
 def course_detail(request, slug):
-    course = get_course(slug)
+    course = get_object_or_404(Course, slug=slug)
     if course is None:
         raise Http404(f"Курс {slug} не знайдено")
     return render(request, "courses/course_detail.html", {"course": course})

@@ -11,9 +11,9 @@
 
 <h2>Програма курсу</h2>
 <ol class="lessons">
-    {% for lesson in course.lessons %}
+    {% for lesson in course.lessons.all %}
     <li>
-        <a href="{% url 'lesson_detail' course.slug forloop.counter %}">{{ lesson.title }}</a>
+        <a href="{% url 'lesson_detail' course.slug lesson.order %}">{{ lesson.title }}</a>
         <span class="muted">{{ lesson.minutes }} хв</span>
     </li>
     {% endfor %}
