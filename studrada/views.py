@@ -3,6 +3,22 @@ from django.http import HttpResponse, Http404
 
 from . data import COURSES, STUDENT, get_course
 from . models import Course
+from . forms import TaskForm, CourseForm
+
+
+def task_create(request):
+    form = TaskForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        title = form.cleaned_data["title"]
+        description = form.cleaned_data["description"]
+        print(title, description)
+
+    return render(request, "courses/task_form.html", {"form": form})
+
+def course_create(request):
+    form = CourseForm()
+    return render(request, "courses/course_form.html", {"form": form})
 
 def home(request):
     context = {
@@ -13,10 +29,12 @@ def home(request):
     return render(request, "home.html", context)
 # Create your views here.
 
+
 def custom_404(request, exception):
     return render(request, "base.html", {
         "title": "404  Not found",
     })
+
 
 def about(request):
     context = {
@@ -25,6 +43,7 @@ def about(request):
     }
 
     return render(request, "base.html", context)
+
 
 USERS = {
     "john": {"email": "john@example.com", "role": "admin"},
@@ -50,7 +69,6 @@ def user_profile(request, username):
         "role": user_info["role"],
     }
     return render(request, "core/profile.html", context)
-
 
 
 def post_detail(request, post_id:int):
