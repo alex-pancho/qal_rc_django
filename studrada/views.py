@@ -21,6 +21,7 @@ def course_create(request):
     form = CourseForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         course = Course.objects.create(**form.cleaned_data)
+        # messages.success(request, f"Курс «{course.title}» створено.")
         return redirect("course_detail", slug=course.slug)
     else:
         form = CourseForm()

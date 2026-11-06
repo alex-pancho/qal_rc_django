@@ -56,3 +56,12 @@ th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--li
 th { background: #eef0f4; font-size: 14px; }
 .bar { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; width: 140px; margin-bottom: 4px; }
 .bar span { display: block; height: 100%; background: var(--brand); }
+
+.btn.danger { background: #dc2626; }
+.messages { list-style: none; padding: 0; margin: 0 0 16px; }
+.messages li { padding: 10px 14px; border-radius: 8px; background: #dcfce7; color: #14532d; }
+.messages li.error { background: #fee2e2; color: #7f1d1d; }
+.errorlist { color: #b91c1c; list-style: none; padding: 0; margin: 4px 0; }
+form .field { margin-bottom: 14px; }
+form .field label { display: block; font-weight: bold; margin-bottom: 4px; }
+form .field input[type=text], form .field input[type=number], form .field select, form .field textarea { width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 8px; }

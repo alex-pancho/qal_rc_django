@@ -12,3 +12,29 @@ class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = ["title", "slug", "level", "teacher", "hours", "is_new", "description"]
+        labels = {
+            "title": "Назва",
+            "slug": "Адреса (slug)",
+            "level": "Рівень",
+            "teacher": "Викладач",
+            "hours": "Тривалість, годин",
+            "is_new": "Позначити як новий",
+            "description": "Опис",
+        }
+        help_texts = {"slug": "Латиниця, цифри та дефіси. Це частина URL."}
+        widgets = {
+            "title": forms.TextInput(attrs={"placeholder": "Наприклад: Python для QA"}),
+            "description": forms.Textarea(attrs={"rows": 4}),
+        }
+
+    def clean_title(self):
+        title = self.cleaned_data["title"].strip()
+        if len(title) < 5:
+            raise forms.ValidationError("Назва має містити щонайменше 5 символів.")
+        return title
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("level") == Course.Level.ADVANCED and (cleaned.get("hours") or 0) < 20:
+            self.add_error("hours", "Просунутий курс має тривати щонайменше 20 годин.")
+        return cleaned

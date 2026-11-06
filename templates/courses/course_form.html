@@ -7,7 +7,16 @@
 
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    <div class="field">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}
+        {{ field.errors }}
+    </div>
+    {% endfor %}
     <button class="btn" type="submit">Зберегти</button>
+    <a href="{% url 'course_list' %}">Скасувати</a>
 </form>
 {% endblock %}
