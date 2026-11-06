@@ -8,10 +8,7 @@ class TaskForm(forms.Form):
     is_done = forms.BooleanField(required=False, widget=forms.CheckboxInput)
 
 
-class CourseForm(forms.Form):
-    title = forms.CharField(max_length=200, label="Назва")
-    slug = forms.SlugField(label="Slug (адреса)")
-    level = forms.ChoiceField(choices=Course.Level.choices, label="Рівень")
-    teacher = forms.CharField(max_length=100, label="Викладач")
-    hours = forms.IntegerField(min_value=1, label="Годин")
-    description = forms.CharField(widget=forms.Textarea, required=False, label="Опис")
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = ["title", "slug", "level", "teacher", "hours", "is_new", "description"]

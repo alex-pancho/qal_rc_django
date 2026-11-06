@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, Http404
 
 from . data import COURSES, STUDENT, get_course
@@ -16,9 +16,28 @@ def task_create(request):
 
     return render(request, "courses/task_form.html", {"form": form})
 
+
 def course_create(request):
-    form = CourseForm()
+    form = CourseForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        course = Course.objects.create(**form.cleaned_data)
+        return redirect("course_detail", slug=course.slug)
+    else:
+        form = CourseForm()
     return render(request, "courses/course_form.html", {"form": form})
+
+def course_update(request, slug):
+    course = get_object_or_404(Course, slug=slug)
+    if request.method == "POST":
+        form = CourseForm(request.POST, instance=course)
+        if form.is_valid():
+            form.save()
+            return redirect(course)
+    else:
+        form = CourseForm(instance=course)
+    context = {"form": form, "heading": f"Редагувати: {course.title}"}
+    return render(request, "courses/course_form.html", context)
+
 
 def home(request):
     context = {

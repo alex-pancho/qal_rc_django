@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse 
 
 
 class Course(models.Model):
@@ -14,6 +15,9 @@ class Course(models.Model):
     hours = models.PositiveSmallIntegerField()
     is_new = models.BooleanField(default=False)
     description = models.TextField(blank=True)
+
+    def get_absolute_url(self):
+        return reverse("course_detail", kwargs={"slug": self.slug})
 
     def __str__(self):
         return self.title
