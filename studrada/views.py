@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, Http404
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import permission_required
 
 from . data import COURSES, STUDENT, get_course
 from . models import Course
@@ -27,6 +29,9 @@ def course_create(request):
         form = CourseForm()
     return render(request, "courses/course_form.html", {"form": form})
 
+@permission_required(
+    "studrada.change_course"
+)
 def course_update(request, slug):
     course = get_object_or_404(Course, slug=slug)
     if request.method == "POST":
@@ -147,3 +152,23 @@ def lesson_detail(request, slug, number):
 def dashboard(request):
     context = {"student": STUDENT, "courses": COURSES}
     return render(request, "courses/dashboard.html", context)
+
+
+def register(request):
+
+    if request.method == "POST":
+
+        form = UserCreationForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect("login")
+
+    else:
+        form = UserCreationForm()
+
+    return render(
+        request,
+        "register.html",
+        {"form": form}
+    )
