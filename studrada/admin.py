@@ -15,3 +15,6 @@ class CourseAdmin(admin.ModelAdmin):
     search_fields = ("title", "teacher")
     prepopulated_fields = {"slug": ("title",)}
     inlines = [LessonInline]
+    # ordering = (
+    #     "-year",
+    # )

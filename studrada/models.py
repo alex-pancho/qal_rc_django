@@ -1,8 +1,8 @@
 from django.db import models
 from django.urls import reverse 
+# from django.contrib import admin
 
-
-class Course(models.Model):
+class Course(models.Model): # class BookAdmin(admin.ModelAdmin):
     class Level(models.TextChoices):
         BEGINNER = "beginner", "Початковий"
         INTERMEDIATE = "intermediate", "Середній"
