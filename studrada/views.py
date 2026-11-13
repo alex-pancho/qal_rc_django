@@ -1,10 +1,9 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, Http404
+from django.http import Http404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import permission_required
 
-from . data import COURSES, STUDENT, get_course
-from . models import Course
+from .models import Course, Lesson
 from . forms import TaskForm, CourseForm
 
 
@@ -112,45 +111,48 @@ def post_detail(request, post_id:int):
 
 def lms_home(request):
     context = {
-        "featured": Course.objects.all()[:2],
+        "featured": Course.objects.prefetch_related("lessons")[:2],
         "courses_count": Course.objects.count(),
-        "lessons_count": sum(len(c["lessons"]) for c in COURSES),
+        "lessons_count": Lesson.objects.count(),
     }
     return render(request, "courses/home.html", context)
 
 
 def course_list(request):
     query = request.GET.get("q", "").strip()
-    courses = Course.objects.all()
     if query:
-        courses = [c for c in COURSES if query.lower() in c["title"].lower()]
+        courses = Course.objects.filter(title__icontains=query)
+    else:
+        courses = Course.objects.all()
     context = {"courses": courses, "query": query}
     return render(request, "courses/course_list.html", context)
 
 
 def course_detail(request, slug):
     course = get_object_or_404(Course, slug=slug)
-    if course is None:
-        raise Http404(f"Курс {slug} не знайдено")
     return render(request, "courses/course_detail.html", {"course": course})
 
 
 def lesson_detail(request, slug, number):
-    course = get_course(slug)
-    if course is None or not 1 <= number <= len(course["lessons"]):
-        raise Http404("Урок не знайдено")
+    course = get_object_or_404(Course, slug=slug)
+    lesson = get_object_or_404(Lesson, course=course, order=number)
+    previous_lesson = course.lessons.filter(order__lt=lesson.order).order_by("-order").first()
+    next_lesson = course.lessons.filter(order__gt=lesson.order).order_by("order").first()
     context = {
         "course": course,
-        "lesson": course["lessons"][number - 1],
-        "number": number,
-        "prev_number": number - 1 if number > 1 else None,
-        "next_number": number + 1 if number < len(course["lessons"]) else None,
+        "lesson": lesson,
+        "number": lesson.order,
+        "prev_number": previous_lesson.order if previous_lesson else None,
+        "next_number": next_lesson.order if next_lesson else None,
     }
     return render(request, "courses/lesson_detail.html", context)
 
 
 def dashboard(request):
-    context = {"student": STUDENT, "courses": COURSES}
+    context = {
+        "student": request.user,
+        "courses": Course.objects.prefetch_related("lessons").all(),
+    }
     return render(request, "courses/dashboard.html", context)
 
 
