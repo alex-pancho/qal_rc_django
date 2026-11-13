@@ -1,11 +1,10 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, Http404
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import permission_required
-
-from . data import COURSES, STUDENT, get_course
-from . models import Course
-from . forms import TaskForm, CourseForm
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Avg
+from . models import Course, CourseReview, Lesson
+from . forms import TaskForm, CourseForm, CourseReviewForm
 
 
 def task_create(request):
@@ -114,7 +113,7 @@ def lms_home(request):
     context = {
         "featured": Course.objects.all()[:2],
         "courses_count": Course.objects.count(),
-        "lessons_count": sum(len(c["lessons"]) for c in COURSES),
+        "lessons_count": Lesson.objects.count(),
     }
     return render(request, "courses/home.html", context)
 
@@ -123,33 +122,63 @@ def course_list(request):
     query = request.GET.get("q", "").strip()
     courses = Course.objects.all()
     if query:
-        courses = [c for c in COURSES if query.lower() in c["title"].lower()]
+        courses = courses.filter(title__icontains=query)
     context = {"courses": courses, "query": query}
     return render(request, "courses/course_list.html", context)
 
 
 def course_detail(request, slug):
     course = get_object_or_404(Course, slug=slug)
-    if course is None:
-        raise Http404(f"Курс {slug} не знайдено")
-    return render(request, "courses/course_detail.html", {"course": course})
+    review = CourseReview.objects.filter(course=course, user=request.user).first() if request.user.is_authenticated else None
+    form = CourseReviewForm(instance=review)
+    context = {
+        "course": course,
+        "reviews": course.reviews.select_related("user").all(),
+        "average_rating": course.reviews.aggregate(average=Avg("rating"))["average"],
+        "review_form": form,
+        "user_review": review,
+    }
+    return render(request, "courses/course_detail.html", context)
+
+
+@login_required
+def course_review(request, slug):
+    course = get_object_or_404(Course, slug=slug)
+    review = CourseReview.objects.filter(course=course, user=request.user).first()
+    form = CourseReviewForm(request.POST, instance=review)
+    if form.is_valid():
+        saved_review = form.save(commit=False)
+        saved_review.course = course
+        saved_review.user = request.user
+        saved_review.save()
+        return redirect(course)
+    context = {
+        "course": course,
+        "reviews": course.reviews.select_related("user").all(),
+        "average_rating": course.reviews.aggregate(average=Avg("rating"))["average"],
+        "review_form": form,
+        "user_review": review,
+    }
+    return render(request, "courses/course_detail.html", context)
 
 
 def lesson_detail(request, slug, number):
-    course = get_course(slug)
-    if course is None or not 1 <= number <= len(course["lessons"]):
-        raise Http404("Урок не знайдено")
+    course = get_object_or_404(Course, slug=slug)
+    lesson = get_object_or_404(Lesson, course=course, order=number)
+    lesson_count = course.lessons.count()
     context = {
         "course": course,
-        "lesson": course["lessons"][number - 1],
+        "lesson": lesson,
         "number": number,
         "prev_number": number - 1 if number > 1 else None,
-        "next_number": number + 1 if number < len(course["lessons"]) else None,
+        "next_number": number + 1 if number < lesson_count else None,
     }
     return render(request, "courses/lesson_detail.html", context)
 
 
 def dashboard(request):
+    from .data import COURSES, STUDENT
+
     context = {"student": STUDENT, "courses": COURSES}
     return render(request, "courses/dashboard.html", context)
 

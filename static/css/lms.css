@@ -65,3 +65,17 @@ th { background: #eef0f4; font-size: 14px; }
 form .field { margin-bottom: 14px; }
 form .field label { display: block; font-weight: bold; margin-bottom: 4px; }
 form .field input[type=text], form .field input[type=number], form .field select, form .field textarea { width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 8px; }
+
+.course-reviews { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); }
+.review-summary { font-size: 18px; font-weight: bold; }
+.review-stars { color: #d97706; white-space: nowrap; }
+.star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; width: fit-content; }
+.star-choice input { position: absolute; opacity: 0; }
+.star-choice label { padding: 0 3px; color: #9ca3af; font-size: 28px; cursor: pointer; }
+.star-choice input:checked ~ label, .star-choice label:hover, .star-choice label:hover ~ label { color: #d97706; }
+.star-choice input:focus-visible + label { outline: 2px solid var(--brand); outline-offset: 2px; }
+.review-form { max-width: 640px; margin: 24px 0; }
+.review-list { margin-top: 28px; }
+.review-item { padding: 16px 0; border-top: 1px solid var(--line); }
+.review-item p { margin: 8px 0 0; }
+.review-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
