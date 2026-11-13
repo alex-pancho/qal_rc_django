@@ -1,5 +1,5 @@
 from django import forms
-from . models import Course
+from . models import Course, CourseReview
 
 
 class TaskForm(forms.Form):
@@ -38,3 +38,19 @@ class CourseForm(forms.ModelForm):
         if cleaned.get("level") == Course.Level.ADVANCED and (cleaned.get("hours") or 0) < 20:
             self.add_error("hours", "Просунутий курс має тривати щонайменше 20 годин.")
         return cleaned
+
+
+class CourseReviewForm(forms.ModelForm):
+    rating = forms.ChoiceField(
+        choices=[(value, str(value)) for value in range(1, 6)],
+        widget=forms.RadioSelect,
+        label="Оцінка",
+    )
+
+    class Meta:
+        model = CourseReview
+        fields = ["rating", "comment"]
+        labels = {"comment": "Коментар"}
+        widgets = {
+            "comment": forms.Textarea(attrs={"rows": 4, "placeholder": "Поділіться враженнями про курс"}),
+        }

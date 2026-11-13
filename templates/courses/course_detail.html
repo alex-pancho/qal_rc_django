@@ -18,5 +18,55 @@
     </li>
     {% endfor %}
 </ol>
+
+<section class="course-reviews" aria-labelledby="reviews-heading">
+    <h2 id="reviews-heading">Відгуки та оцінки</h2>
+    {% if average_rating %}
+    <p class="review-summary"><span class="review-stars" aria-label="Середня оцінка {{ average_rating|floatformat:1 }} з 5">★</span> {{ average_rating|floatformat:1 }} / 5 · {{ reviews|length }} відгуків</p>
+    {% else %}
+    <p class="muted">Ще немає відгуків. Будьте першим!</p>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <form class="review-form" method="post" action="{% url 'course_review' course.slug %}">
+        {% csrf_token %}
+        <div class="field">
+            {{ review_form.rating.label_tag }}
+            <div class="star-rating" role="radiogroup" aria-label="Оцінка від 1 до 5 зірок">
+                {% for choice in review_form.rating %}
+                <span class="star-choice">{{ choice.tag }}<label for="{{ choice.id_for_label }}" title="{{ choice.choice_label }} зірок">★</label></span>
+                {% endfor %}
+            </div>
+            {{ review_form.rating.errors }}
+        </div>
+        <div class="field">
+            {{ review_form.comment.label_tag }}
+            {{ review_form.comment }}
+            {{ review_form.comment.errors }}
+        </div>
+        <button class="btn" type="submit">{% if user_review %}Оновити відгук{% else %}Залишити відгук{% endif %}</button>
+    </form>
+    {% else %}
+    <p><a href="{% url 'login' %}?next={{ request.path|urlencode }}">Увійдіть</a>, щоб залишити відгук.</p>
+    {% endif %}
+
+    <div class="review-list">
+        {% for review in reviews %}
+        <article class="review-item">
+            <div class="review-heading">
+                <strong>{{ review.user.get_full_name|default:review.user.username }}</strong>
+                <span class="review-stars" aria-label="Оцінка {{ review.rating }} з 5">
+                    {% for star in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}
+                </span>
+                <time class="muted" datetime="{{ review.updated_at|date:'c' }}">{{ review.updated_at|date:"d.m.Y" }}</time>
+            </div>
+            <p>{{ review.comment|linebreaksbr }}</p>
+        </article>
+        {% empty %}
+        <p class="muted">Відгуки з’являться тут.</p>
+        {% endfor %}
+    </div>
+</section>
+
 <a class="btn" href="{% url 'course_update' course.slug %}">Редагувати</a>
 {% endblock %}
