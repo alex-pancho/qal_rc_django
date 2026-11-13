@@ -3,27 +3,26 @@
 {% block title %}Мій кабінет{% endblock %}
 
 {% block content %}
-<h1>Вітаємо, {{ student.name }}!</h1>
+<h1>Вітаємо, {% firstof student.get_full_name student.username "студенте" %}!</h1>
 <p class="muted">{{ student.email }} · Сьогодні: {% now "d.m.Y" %}</p>
 
 <h2>Мої курси</h2>
 <table>
     <thead>
-        <tr><th>Курс</th><th>Прогрес</th><th>Дедлайн</th><th>Статус</th></tr>
+        <tr><th>Курс</th><th>Прогрес</th><th>Статус</th></tr>
     </thead>
     <tbody>
     {% for course in courses %}
-        <tr>
+        <tr class="dashboard-course" data-course-slug="{{ course.slug }}" data-lesson-orders="{% for lesson in course.lessons.all %}{{ lesson.order }}{% if not forloop.last %},{% endif %}{% endfor %}">
             <td><a href="{% url 'course_detail' course.slug %}">{{ course.title }}</a></td>
             <td>
-                <div class="bar"><span style="width: {{ course.progress }}%"></span></div>
-                {{ course.progress }}%
+                <div class="bar"><span data-progress-bar></span></div>
+                <span data-progress>0%</span>
             </td>
-            <td>{{ course.deadline|date:"d.m.Y"|default:"—" }}</td>
-            <td>{% if course.progress == 100 %}Завершено{% else %}У процесі{% endif %}</td>
+            <td data-progress-status>У процесі</td>
         </tr>
     {% empty %}
-        <tr><td colspan="4">Ви ще не записані на жоден курс.</td></tr>
+        <tr><td colspan="3">Курсів поки немає.</td></tr>
     {% endfor %}
     </tbody>
 </table>

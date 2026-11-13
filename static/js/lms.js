@@ -26,4 +26,21 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
+
+    document.querySelectorAll(".dashboard-course").forEach(function (row) {
+        var orders = row.dataset.lessonOrders ? row.dataset.lessonOrders.split(",") : [];
+        var completed = 0;
+        try {
+            completed = orders.filter(function (order) {
+                return localStorage.getItem("lms-done-" + row.dataset.courseSlug + "-" + order) === "1";
+            }).length;
+        } catch (e) { /* ігноруємо */ }
+
+        var progress = orders.length ? Math.round(completed / orders.length * 100) : 0;
+        row.querySelector("[data-progress]").textContent = progress + "%";
+        row.querySelector("[data-progress-bar]").style.width = progress + "%";
+        row.querySelector("[data-progress-status]").textContent = orders.length === 0
+            ? "Немає уроків"
+            : progress === 100 ? "Завершено" : "У процесі";
+    });
 });
