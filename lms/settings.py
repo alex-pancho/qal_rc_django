@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "studrada",
+    "rest_framework",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -133,3 +135,8 @@ MAILERS = {
 LOGIN_REDIRECT_URL = "dashboard"
 LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = "login"
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS":
+        "drf_spectacular.openapi.AutoSchema",
+}

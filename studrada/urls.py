@@ -1,6 +1,10 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView
 from . import views
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+)
 
 urlpatterns = [
     path("", views.lms_home, name="home"),
@@ -13,9 +17,18 @@ urlpatterns = [
     path("lms/<slug:slug>/lessons/<int:number>/", views.lesson_detail, name="lesson_detail"),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("reg/", views.register, name="register"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("api/courses/", views.CourseList.as_view(),  ),
     path(
-        "login/",
-        LoginView.as_view(),
-        name="login"
+        "api/schema/",
+        SpectacularAPIView.as_view(),
+        name="schema",
     ),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(
+            url_name="schema"
+        ),
+    ),
+
 ]

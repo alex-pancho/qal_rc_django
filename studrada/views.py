@@ -2,10 +2,43 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, Http404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import permission_required
-
-from . data import COURSES, STUDENT, get_course
-from . models import Course
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from . models import Course, Lesson
 from . forms import TaskForm, CourseForm
+from . serializers import CourseSerializer
+
+
+class CourseList(APIView):
+
+    def get(self, request):
+        courses = Course.objects.all()
+
+        serializer = CourseSerializer(
+            courses,
+            many=True
+        )
+
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CourseSerializer(
+            data=request.data
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 def task_create(request):
@@ -68,46 +101,6 @@ def about(request):
     }
 
     return render(request, "base.html", context)
-
-
-USERS = {
-    "john": {"email": "john@example.com", "role": "admin"},
-    "jane": {"email": "jane@example.com", "role": "user"},
-    "bob": {"email": "bob@example.com", "role": "moderator"},
-}
-
-POSTS = {
-    1: {"title": "Перший пост", "content": "Це мій перший пост на блозі."},
-    2: {"title": "Другий пост", "content": "Продовжую писати про Django."},
-    3: {"title": "Третій пост", "content": "Views та URL-маршрути."},
-}
-
-
-def user_profile(request, username):
-    user_info = USERS.get(username)
-    if user_info is None:
-        raise Http404(f"Користувача {username} не знайдено")
-
-    context = {
-        "username": username,
-        "email": user_info["email"],
-        "role": user_info["role"],
-    }
-    return render(request, "core/profile.html", context)
-
-
-def post_detail(request, post_id:int):
-    post = POSTS.get(post_id)
-    if post is None:
-        raise Http404(f"Пост з ID {post_id} не знайдено")
-    context = {
-        "post_id": post_id,
-        "title": post["title"],
-        "content": post["content"],
-    }
-    return render(request, "base.html", {
-        "title": context,
-    })
 
 
 def lms_home(request):
