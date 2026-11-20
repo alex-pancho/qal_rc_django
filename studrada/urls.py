@@ -19,6 +19,7 @@ urlpatterns = [
     path("reg/", views.register, name="register"),
     path("login/", LoginView.as_view(), name="login"),
     path("api/courses/", views.CourseList.as_view(),  ),
+    path('api/courses/<int:pk>/', views.course_detail_api, name='api-course-detail'),
     path(
         "api/schema/",
         SpectacularAPIView.as_view(),

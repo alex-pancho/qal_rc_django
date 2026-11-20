@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import permission_required
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from . models import Course, Lesson
 from . forms import TaskForm, CourseForm
@@ -126,6 +127,27 @@ def course_detail(request, slug):
     if course is None:
         raise Http404(f"Курс {slug} не знайдено")
     return render(request, "courses/course_detail.html", {"course": course})
+
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+def course_detail_api(request, pk):
+    post = get_object_or_404(Course, pk=pk)
+
+    if request.method == 'GET':
+        return Response(CourseSerializer(post).data)
+
+    if request.method == 'DELETE':
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    serializer = CourseSerializer(
+        post,
+        data=request.data,
+        partial=(request.method == 'PATCH'),
+    )
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def lesson_detail(request, slug, number):
