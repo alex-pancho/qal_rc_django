@@ -107,7 +107,7 @@ def lms_home(request):
     context = {
         "featured": Course.objects.all()[:2],
         "courses_count": Course.objects.count(),
-        "lessons_count": sum(len(c["lessons"]) for c in COURSES),
+        "lessons_count": Lesson.objects.count(),
     }
     return render(request, "courses/home.html", context)
 
@@ -116,7 +116,7 @@ def course_list(request):
     query = request.GET.get("q", "").strip()
     courses = Course.objects.all()
     if query:
-        courses = [c for c in COURSES if query.lower() in c["title"].lower()]
+        courses = courses.filter(title__icontains=query)
     context = {"courses": courses, "query": query}
     return render(request, "courses/course_list.html", context)
 
@@ -129,7 +129,7 @@ def course_detail(request, slug):
 
 
 def lesson_detail(request, slug, number):
-    course = get_course(slug)
+    course = get_object_or_404(Course, slug=slug)
     if course is None or not 1 <= number <= len(course["lessons"]):
         raise Http404("Урок не знайдено")
     context = {
@@ -143,7 +143,10 @@ def lesson_detail(request, slug, number):
 
 
 def dashboard(request):
-    context = {"student": STUDENT, "courses": COURSES}
+    context = {
+        "student": request.user,
+        "courses": Course.objects.all(),
+    }
     return render(request, "courses/dashboard.html", context)
 
 
