@@ -130,14 +130,16 @@ def course_detail(request, slug):
 
 def lesson_detail(request, slug, number):
     course = get_object_or_404(Course, slug=slug)
-    if course is None or not 1 <= number <= len(course["lessons"]):
+    lessons = list(course.lessons.all())
+
+    if not 1 <= number <= len(lessons):
         raise Http404("Урок не знайдено")
     context = {
         "course": course,
-        "lesson": course["lessons"][number - 1],
+        "lesson": lessons[number - 1],
         "number": number,
         "prev_number": number - 1 if number > 1 else None,
-        "next_number": number + 1 if number < len(course["lessons"]) else None,
+        "next_number": number + 1 if number < len(lessons) else None,
     }
     return render(request, "courses/lesson_detail.html", context)
 
