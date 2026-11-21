@@ -5,6 +5,7 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
 )
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path("", views.lms_home, name="home"),
@@ -31,5 +32,6 @@ urlpatterns = [
             url_name="schema"
         ),
     ),
+    path('api/token/', obtain_auth_token, name='api-token'),
 
 ]
