@@ -9,10 +9,16 @@ from rest_framework.response import Response
 from . models import Course, Lesson
 from . forms import TaskForm, CourseForm
 from . serializers import CourseSerializer
-
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from drf_spectacular.utils import extend_schema
 
 class CourseList(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
+    @extend_schema(
+        responses=CourseSerializer(many=True),
+        summary="Отримати список курсів"
+    )
     def get(self, request):
         courses = Course.objects.all()
 
@@ -23,6 +29,11 @@ class CourseList(APIView):
 
         return Response(serializer.data)
 
+    @extend_schema(
+        request=CourseSerializer,
+        responses={201: CourseSerializer},
+        summary="Створити новий курс"
+    )
     def post(self, request):
         serializer = CourseSerializer(
             data=request.data
